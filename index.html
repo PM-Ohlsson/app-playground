@@ -2,225 +2,620 @@
 <html lang="sv">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>G Scroll</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#0b0b0d">
+  <title>Manfred Ohlsson — Visual Designer</title>
+
   <style>
     :root {
-      --garo-red: #c92333;
-      --bg: #f4f4f1;
-      --text: #171717;
-      --muted: #666;
+      --bg: #0b0b0d;
+      --panel: rgba(255,255,255,.055);
+      --panel-border: rgba(255,255,255,.10);
+      --text: #f4f3ef;
+      --muted: rgba(244,243,239,.58);
+      --accent: #ff4b3e;
+      --max: 1220px;
     }
 
     * { box-sizing: border-box; }
 
-    html, body {
-      margin: 0;
-      padding: 0;
+    html {
+      scroll-behavior: smooth;
       background: var(--bg);
-      color: var(--text);
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
     }
+
+    body {
+      margin: 0;
+      color: var(--text);
+      background:
+        radial-gradient(circle at 50% -20%, rgba(255,255,255,.08), transparent 34rem),
+        linear-gradient(180deg, #0b0b0d 0%, #0d0d10 48%, #09090b 100%);
+      font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      overflow-x: hidden;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    .noise {
+      pointer-events: none;
+      position: fixed;
+      inset: 0;
+      z-index: 20;
+      opacity: .12;
+      mix-blend-mode: soft-light;
+      background-image:
+        url("data:image/svg+xml,%3Csvg viewBox='0 0 180 180' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.15'/%3E%3C/svg%3E");
+    }
+
+    .site-header {
+      position: fixed;
+      inset: 0 0 auto 0;
+      z-index: 30;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 24px clamp(20px, 4vw, 56px);
+      mix-blend-mode: difference;
+      color: white;
+      pointer-events: none;
+    }
+
+    .site-header > * { pointer-events: auto; }
+
+    .brand {
+      font-size: 14px;
+      font-weight: 800;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+    }
+
+    .nav {
+      display: flex;
+      gap: 26px;
+      font-size: 13px;
+      color: rgba(255,255,255,.78);
+    }
+
+    .nav a:hover { color: white; }
 
     .hero {
       position: relative;
-      height: 500vh;
+      min-height: 200vh;
     }
 
-    .sticky {
+    .hero-sticky {
       position: sticky;
       top: 0;
       height: 100vh;
       display: grid;
-      grid-template-rows: auto 1fr auto;
-      align-items: center;
-      justify-items: center;
-      padding: 24px;
+      place-items: center;
       overflow: hidden;
     }
 
-    .topbar {
-      width: min(1200px, 100%);
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      align-self: start;
-      padding-top: 4px;
+    .hero-glow {
+      position: absolute;
+      width: min(72vw, 760px);
+      aspect-ratio: 1;
+      border-radius: 50%;
+      background:
+        radial-gradient(circle, rgba(255,75,62,.19) 0%, rgba(255,75,62,.05) 38%, transparent 70%);
+      filter: blur(12px);
+      transform: scale(1.12);
     }
 
-    .brand {
-      font-size: 20px;
-      font-weight: 800;
-      letter-spacing: 0.14em;
-      color: var(--garo-red);
-    }
-
-    .hint {
-      font-size: 14px;
-      color: var(--muted);
-    }
-
-    .canvas-wrap {
-      width: min(78vw, 78vh, 680px);
-      aspect-ratio: 1 / 1;
+    .g-wrap {
+      position: relative;
+      z-index: 3;
+      width: min(72vw, 72vh, 760px);
+      aspect-ratio: 1;
       display: grid;
       place-items: center;
+      filter: drop-shadow(0 36px 70px rgba(0,0,0,.45));
     }
 
-    canvas {
+    #gCanvas {
       width: 100%;
       height: 100%;
       display: block;
     }
 
-    .bottom {
-      align-self: end;
-      text-align: center;
-      padding-bottom: 12px;
+    .hero-copy {
+      position: absolute;
+      inset: auto auto 7vh clamp(20px, 5vw, 70px);
+      z-index: 4;
+      max-width: 520px;
     }
 
-    .progress-wrap {
-      width: min(240px, 70vw);
-      height: 4px;
-      background: rgba(0,0,0,0.08);
-      border-radius: 999px;
-      overflow: hidden;
-      margin: 0 auto 10px;
+    .eyebrow {
+      margin: 0 0 12px;
+      color: var(--accent);
+      font-size: 12px;
+      font-weight: 800;
+      letter-spacing: .16em;
+      text-transform: uppercase;
     }
 
-    .progress {
-      height: 100%;
-      width: 0%;
-      background: var(--garo-red);
-      transform-origin: left center;
+    h1 {
+      margin: 0;
+      font-size: clamp(44px, 7vw, 104px);
+      line-height: .9;
+      letter-spacing: -.055em;
+      font-weight: 760;
     }
 
-    .frame-label {
-      font-size: 14px;
+    .hero-copy p {
+      margin: 18px 0 0;
+      max-width: 440px;
       color: var(--muted);
+      font-size: clamp(16px, 1.5vw, 20px);
+      line-height: 1.5;
     }
 
-    @media (max-width: 700px) {
-      .topbar {
-        flex-direction: column;
-        gap: 8px;
-        align-items: flex-start;
-      }
+    .scroll-note {
+      position: absolute;
+      right: clamp(20px, 5vw, 70px);
+      bottom: 7vh;
+      z-index: 4;
+      color: rgba(255,255,255,.46);
+      font-size: 12px;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      writing-mode: vertical-rl;
+    }
 
-      .canvas-wrap {
-        width: min(88vw, 88vh);
+    main {
+      position: relative;
+      z-index: 5;
+      background: linear-gradient(180deg, rgba(11,11,13,0) 0%, rgba(11,11,13,.9) 8%, var(--bg) 16%);
+    }
+
+    .section {
+      width: min(var(--max), calc(100% - 40px));
+      margin: 0 auto;
+      padding: 110px 0;
+    }
+
+    .intro {
+      display: grid;
+      grid-template-columns: .8fr 1.2fr;
+      gap: clamp(32px, 8vw, 120px);
+      align-items: start;
+    }
+
+    .section-kicker {
+      color: var(--accent);
+      font-size: 12px;
+      font-weight: 800;
+      letter-spacing: .16em;
+      text-transform: uppercase;
+    }
+
+    .intro h2,
+    .projects h2,
+    .contact h2 {
+      margin: 0;
+      font-size: clamp(38px, 5vw, 72px);
+      line-height: .98;
+      letter-spacing: -.045em;
+    }
+
+    .intro-copy {
+      color: rgba(244,243,239,.74);
+      font-size: clamp(18px, 2vw, 28px);
+      line-height: 1.48;
+      max-width: 760px;
+    }
+
+    .cards {
+      margin-top: 64px;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 18px;
+    }
+
+    .card {
+      min-height: 310px;
+      padding: 28px;
+      border: 1px solid var(--panel-border);
+      border-radius: 28px;
+      background:
+        linear-gradient(180deg, rgba(255,255,255,.065), rgba(255,255,255,.025));
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      transition: transform .25s ease, border-color .25s ease;
+    }
+
+    .card:hover {
+      transform: translateY(-5px);
+      border-color: rgba(255,255,255,.22);
+    }
+
+    .card-index {
+      color: rgba(255,255,255,.35);
+      font-size: 12px;
+      letter-spacing: .12em;
+    }
+
+    .card h3 {
+      margin: 0 0 8px;
+      font-size: 28px;
+      letter-spacing: -.03em;
+    }
+
+    .card p {
+      margin: 0;
+      color: var(--muted);
+      line-height: 1.55;
+    }
+
+    .project-grid {
+      margin-top: 58px;
+      display: grid;
+      grid-template-columns: 1.25fr .75fr;
+      gap: 18px;
+    }
+
+    .project {
+      min-height: 440px;
+      border-radius: 30px;
+      border: 1px solid var(--panel-border);
+      background:
+        radial-gradient(circle at 70% 30%, rgba(255,75,62,.16), transparent 34%),
+        linear-gradient(140deg, rgba(255,255,255,.07), rgba(255,255,255,.02));
+      padding: 34px;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .project.small {
+      background:
+        radial-gradient(circle at 30% 20%, rgba(112,139,255,.13), transparent 36%),
+        linear-gradient(140deg, rgba(255,255,255,.07), rgba(255,255,255,.02));
+    }
+
+    .project::before {
+      content: "";
+      position: absolute;
+      inset: 24px;
+      border: 1px solid rgba(255,255,255,.06);
+      border-radius: 22px;
+      pointer-events: none;
+    }
+
+    .project-meta {
+      color: rgba(255,255,255,.42);
+      font-size: 12px;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      margin-bottom: 10px;
+    }
+
+    .project-title {
+      font-size: clamp(30px, 4vw, 54px);
+      line-height: 1;
+      letter-spacing: -.04em;
+      margin: 0;
+      max-width: 620px;
+    }
+
+    .project-desc {
+      color: var(--muted);
+      max-width: 560px;
+      margin-top: 14px;
+      line-height: 1.5;
+    }
+
+    .contact {
+      padding-bottom: 150px;
+    }
+
+    .contact-box {
+      border-top: 1px solid var(--panel-border);
+      padding-top: 56px;
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 40px;
+      align-items: end;
+    }
+
+    .contact p {
+      color: var(--muted);
+      max-width: 600px;
+      line-height: 1.5;
+      font-size: 18px;
+    }
+
+    .cta {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 160px;
+      padding: 16px 22px;
+      border-radius: 999px;
+      background: var(--text);
+      color: #0b0b0d;
+      font-weight: 800;
+      transition: transform .2s ease;
+    }
+
+    .cta:hover { transform: scale(1.03); }
+
+    .rotation-meter {
+      position: fixed;
+      left: 22px;
+      top: 50%;
+      z-index: 15;
+      transform: translateY(-50%);
+      height: 120px;
+      width: 2px;
+      background: rgba(255,255,255,.08);
+      overflow: hidden;
+      border-radius: 99px;
+    }
+
+    .rotation-meter span {
+      display: block;
+      width: 100%;
+      height: 20%;
+      background: var(--accent);
+      transform: translateY(0);
+      will-change: transform;
+    }
+
+    @media (max-width: 900px) {
+      .nav { display: none; }
+      .hero {
+        min-height: 175vh;
       }
+      .g-wrap {
+        width: min(88vw, 68vh);
+      }
+      .hero-copy {
+        bottom: 5vh;
+        right: 20px;
+      }
+      .scroll-note { display: none; }
+      .intro {
+        grid-template-columns: 1fr;
+        gap: 20px;
+      }
+      .cards {
+        grid-template-columns: 1fr;
+      }
+      .project-grid {
+        grid-template-columns: 1fr;
+      }
+      .contact-box {
+        grid-template-columns: 1fr;
+        align-items: start;
+      }
+      .rotation-meter { display: none; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto; }
     }
   </style>
 </head>
+
 <body>
-  <section class="hero" id="scrollSection">
-    <div class="sticky">
-      <div class="topbar">
-        <div class="brand">Spinn that G</div>
-        <div class="hint">Scrolla ned eller upp för att rotera G:et</div>
+  <div class="noise"></div>
+
+  <header class="site-header">
+    <div class="brand">Manfred Ohlsson</div>
+    <nav class="nav">
+      <a href="#about">About</a>
+      <a href="#work">Work</a>
+      <a href="#contact">Contact</a>
+    </nav>
+  </header>
+
+  <div class="rotation-meter" aria-hidden="true"><span id="meter"></span></div>
+
+  <section class="hero">
+    <div class="hero-sticky">
+      <div class="hero-glow"></div>
+
+      <div class="g-wrap">
+        <canvas id="gCanvas" width="500" height="500" aria-label="Roterande 3D G"></canvas>
       </div>
 
-      <div class="canvas-wrap">
-        <canvas id="sequenceCanvas" width="500" height="500" aria-label="Roterande GARO G"></canvas>
+      <div class="hero-copy">
+        <div class="eyebrow">Visual designer · Motion · 3D</div>
+        <h1>Ideas<br>in motion.</h1>
+        <p>
+          Design, animation and visual storytelling with a focus on clean systems,
+          strong typography and expressive motion.
+        </p>
       </div>
 
-      <div class="bottom">
-        <div class="progress-wrap">
-          <div class="progress" id="progressBar"></div>
-        </div>
-        <div class="frame-label" id="frameLabel">Frame 1 / 25</div>
-      </div>
+      <div class="scroll-note">Scroll to rotate</div>
     </div>
   </section>
 
+  <main>
+    <section class="section intro" id="about">
+      <div>
+        <div class="section-kicker">About</div>
+      </div>
+      <div>
+        <h2>Visual work that feels precise, simple and alive.</h2>
+        <p class="intro-copy">
+          I work across graphic design, motion, film and 3D — often combining them
+          into one coherent visual system. The goal is usually the same: remove the noise,
+          keep the idea clear and make the result feel intentional.
+        </p>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="cards">
+        <article class="card">
+          <div class="card-index">01</div>
+          <div>
+            <h3>Design</h3>
+            <p>Brand systems, campaigns, layouts and visual identities built around clarity and strong hierarchy.</p>
+          </div>
+        </article>
+
+        <article class="card">
+          <div class="card-index">02</div>
+          <div>
+            <h3>Motion</h3>
+            <p>Animation, reels, explainers and visual hooks designed to make simple ideas feel dynamic.</p>
+          </div>
+        </article>
+
+        <article class="card">
+          <div class="card-index">03</div>
+          <div>
+            <h3>3D + Film</h3>
+            <p>Product visualization, compositing and cinematic content where design and storytelling meet.</p>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section class="section projects" id="work">
+      <div class="section-kicker">Selected work</div>
+      <h2>Some things<br>I like making.</h2>
+
+      <div class="project-grid">
+        <article class="project">
+          <div class="project-meta">Motion / 3D / Campaign</div>
+          <h3 class="project-title">Product stories with movement at the center.</h3>
+          <p class="project-desc">A placeholder project block for your strongest case, reel or campaign.</p>
+        </article>
+
+        <article class="project small">
+          <div class="project-meta">Brand / Graphic design</div>
+          <h3 class="project-title">Simple systems. Strong details.</h3>
+          <p class="project-desc">Use this for a second project or a more design-led case.</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="section contact" id="contact">
+      <div class="contact-box">
+        <div>
+          <div class="section-kicker">Contact</div>
+          <h2>Let’s make<br>something good.</h2>
+          <p>Replace this with your preferred contact text, email or social links.</p>
+        </div>
+        <a class="cta" href="mailto:hello@example.com">Say hello</a>
+      </div>
+    </section>
+  </main>
+
   <script>
     const framePaths = ['G_0001.png', 'G_0002.png', 'G_0003.png', 'G_0004.png', 'G_0005.png', 'G_0006.png', 'G_0007.png', 'G_0008.png', 'G_0009.png', 'G_0010.png', 'G_0011.png', 'G_0012.png', 'G_0013.png', 'G_0014.png', 'G_0015.png', 'G_0016.png', 'G_0017.png', 'G_0018.png', 'G_0019.png', 'G_0020.png', 'G_0021.png', 'G_0022.png', 'G_0023.png', 'G_0024.png', 'G_0025.png'].map(name => `frames/${name}`);
-    const canvas = document.getElementById("sequenceCanvas");
+    const canvas = document.getElementById("gCanvas");
     const ctx = canvas.getContext("2d");
-    const progressBar = document.getElementById("progressBar");
-    const frameLabel = document.getElementById("frameLabel");
-    const scrollSection = document.getElementById("scrollSection");
+    const meter = document.getElementById("meter");
 
     const images = [];
-    let loadedCount = 0;
-    let currentFrame = 0;
+    let currentFrame = -1;
+    let ready = false;
 
-    function loadImages() {
-      return Promise.all(framePaths.map((src, index) => {
-        return new Promise((resolve, reject) => {
-          const img = new Image();
-          img.onload = () => {
-            images[index] = img;
-            loadedCount++;
-            resolve(img);
-          };
-          img.onerror = reject;
-          img.src = src;
-        });
-      }));
+    // How much scrolling advances the animation.
+    // Lower = faster rotation, higher = slower rotation.
+    const pixelsPerFrame = 38;
+
+    function preloadFrames() {
+      return Promise.all(framePaths.map((src, index) => new Promise((resolve, reject) => {
+        const img = new Image();
+        img.decoding = "async";
+        img.onload = () => {
+          images[index] = img;
+          resolve();
+        };
+        img.onerror = reject;
+        img.src = src;
+      })));
     }
 
     function drawFrame(index) {
-      const img = images[index];
-      if (!img) return;
+      if (!images[index]) return;
 
+      const img = images[index];
       ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-      // Keep transparent background intact
       const scale = Math.min(canvas.width / img.width, canvas.height / img.height);
-      const drawWidth = img.width * scale;
-      const drawHeight = img.height * scale;
-      const x = (canvas.width - drawWidth) / 2;
-      const y = (canvas.height - drawHeight) / 2;
+      const w = img.width * scale;
+      const h = img.height * scale;
+      const x = (canvas.width - w) / 2;
+      const y = (canvas.height - h) / 2;
 
-      ctx.drawImage(img, x, y, drawWidth, drawHeight);
-
+      ctx.drawImage(img, x, y, w, h);
       currentFrame = index;
-      progressBar.style.width = `${(index / (images.length - 1)) * 100}%`;
-      frameLabel.textContent = `Frame ${index + 1} / ${images.length}`;
     }
 
-    function updateFromScroll() {
-      const rect = scrollSection.getBoundingClientRect();
-      const totalScrollable = scrollSection.offsetHeight - window.innerHeight;
-      const pixelsScrolled = Math.min(Math.max(-rect.top, 0), totalScrollable);
-      const progress = totalScrollable > 0 ? pixelsScrolled / totalScrollable : 0;
-      const frameIndex = Math.min(
-        images.length - 1,
-        Math.max(0, Math.round(progress * (images.length - 1)))
-      );
+    function frameFromScroll() {
+      // This is intentionally NOT clamped.
+      // Modulo makes the 25-frame sequence loop forever as the page continues.
+      const absoluteFrame = Math.floor(window.scrollY / pixelsPerFrame);
+      return ((absoluteFrame % images.length) + images.length) % images.length;
+    }
 
-      if (frameIndex !== currentFrame) {
-        drawFrame(frameIndex);
-      } else {
-        progressBar.style.width = `${progress * 100}%`;
+    function update() {
+      if (!ready) return;
+
+      const frame = frameFromScroll();
+      if (frame !== currentFrame) drawFrame(frame);
+
+      const cycleProgress = (window.scrollY / pixelsPerFrame) % images.length;
+      const normalized = cycleProgress / images.length;
+      const travel = 96;
+      meter.style.transform = `translateY(${normalized * travel}px)`;
+    }
+
+    function resizeCanvas() {
+      const rect = canvas.getBoundingClientRect();
+      const dpr = Math.min(window.devicePixelRatio || 1, 2);
+      const width = Math.max(500, Math.round(rect.width * dpr));
+      const height = Math.max(500, Math.round(rect.height * dpr));
+
+      if (canvas.width !== width || canvas.height !== height) {
+        canvas.width = width;
+        canvas.height = height;
+        if (ready) drawFrame(frameFromScroll());
       }
     }
 
-    function setCanvasResolution() {
-      const ratio = window.devicePixelRatio || 1;
-      const displaySize = canvas.getBoundingClientRect().width;
-      const size = Math.max(500, Math.round(displaySize * ratio));
-      canvas.width = size;
-      canvas.height = size;
-      drawFrame(currentFrame);
-    }
+    let ticking = false;
+    window.addEventListener("scroll", () => {
+      if (!ticking) {
+        requestAnimationFrame(() => {
+          update();
+          ticking = false;
+        });
+        ticking = true;
+      }
+    }, { passive: true });
 
-    loadImages().then(() => {
-      drawFrame(0);
-      setCanvasResolution();
-      updateFromScroll();
-
-      window.addEventListener("scroll", updateFromScroll, { passive: true });
-      window.addEventListener("resize", () => {
-        setCanvasResolution();
-        updateFromScroll();
-      });
-    }).catch(err => {
-      console.error("Kunde inte ladda bildsekvensen", err);
-      frameLabel.textContent = "Kunde inte ladda frames";
+    window.addEventListener("resize", () => {
+      resizeCanvas();
+      update();
     });
+
+    preloadFrames()
+      .then(() => {
+        ready = true;
+        resizeCanvas();
+        update();
+      })
+      .catch(err => {
+        console.error("Could not load image sequence:", err);
+      });
   </script>
 </body>
 </html>
